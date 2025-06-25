@@ -1,4 +1,4 @@
-const { Validator, addCustomMessages } = require('node-input-validator');
+const { Validator, addCustomMessages } = require("node-input-validator");
 
 // {fieldName:message} eg:{email:"Invalid Email", password:"Password too short"}
 const formatValidationError = (error) => {
@@ -23,33 +23,31 @@ module.exports = {
    * @param {object} _extendMessages object defining message to throw on validation error eg: {"email.required":"Email is required","email.email":"Invalid email"}
    *
    */
-  validateInput: (validationObject = {}, _extendMessages = {}) => async (
-    req,
-    res,
-    next,
-  ) => {
-    const validation = new Validator(req.body, validationObject);
-    addCustomMessages(_extendMessages);
+  validateInput:
+    (validationObject = {}, _extendMessages = {}) =>
+    async (req, res, next) => {
+      const validation = new Validator(req.body, validationObject);
+      addCustomMessages(_extendMessages);
 
-    try {
-      const isValid = await validation.check();
-      if (!isValid) {
-        req.validationError = formatValidationError(validation.errors);
+      try {
+        const isValid = await validation.check();
+        if (!isValid) {
+          req.validationError = formatValidationError(validation.errors);
+        }
+        return next();
+      } catch (error) {
+        req.validationError = error.message;
+        return next();
       }
-      return next();
-    } catch (error) {
-      req.validationError = error.message;
-      return next();
-    }
-  },
+    },
 
   handleValidationErrorForViews: (
     req,
     res,
     viewModel,
-    viewPath = '/',
+    viewPath = "/",
     fieldsStoreKey,
-    defaultValue = {},
+    defaultValue = {}
   ) => {
     const validationError = req.validationError;
 
@@ -59,7 +57,7 @@ module.exports = {
         viewModel[fieldsStoreKey][key] = value;
       });
 
-      if (typeof validationError === 'string') {
+      if (typeof validationError === "string") {
         viewModel.error = validationError;
       } else {
         viewModel.validationError = req.validationError;
@@ -73,7 +71,7 @@ module.exports = {
 
     if (validationError) {
       let error;
-      if (typeof validationError === 'string') {
+      if (typeof validationError === "string") {
         error = validationError;
       } else {
         error = req.validationError;
